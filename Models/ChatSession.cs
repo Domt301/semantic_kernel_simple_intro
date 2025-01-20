@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class ChatSessionDto
 {
     [Column("session_id")]
-    public string SessionId { get; set; }
+    public string? SessionId { get; set; }
     
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }

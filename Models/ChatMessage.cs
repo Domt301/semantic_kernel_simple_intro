@@ -6,13 +6,13 @@ public class ChatMessageDto
     public int Id { get; set; }
     
     [Column("session_id")]
-    public string SessionId { get; set; }
+    public string? SessionId { get; set; }
     
     [Column("role")]
-    public string Role { get; set; }
+    public string? Role { get; set; }
     
     [Column("content")]
-    public string Content { get; set; }
+    public string? Content { get; set; }
     
     [Column("timestamp")]
     public DateTime Timestamp { get; set; }

@@ -15,6 +15,14 @@ var modelName = configuration["OpenAI:ModelName"];
 var apiKey = configuration["OpenAI:ApiKey"];
 var connectionString = configuration["Database:ConnectionString"];
 var builder = Kernel.CreateBuilder();
+if (string.IsNullOrEmpty(modelName))
+{
+    throw new ArgumentNullException(nameof(modelName), "Model name cannot be null or empty.");
+}
+if(string.IsNullOrEmpty(apiKey))
+{
+    throw new ArgumentNullException(nameof(apiKey), "API key cannot be null or empty.");
+}
 builder.AddOpenAIChatCompletion(modelName, apiKey);
 
 // Add database context and chat persistence service
@@ -32,7 +40,7 @@ var persistenceService = kernel.GetRequiredService<IChatPersistenceService>();
 
 // Session management
 Console.Write("Enter session ID (or press Enter for new session): ");
-string sessionId = Console.ReadLine();
+string sessionId = Console.ReadLine() ?? string.Empty;
 
 if (string.IsNullOrEmpty(sessionId))
 {

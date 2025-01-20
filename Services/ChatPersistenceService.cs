@@ -27,9 +27,10 @@ public class ChatPersistenceService : IChatPersistenceService
 
     public async Task<ChatSessionDto> GetSessionAsync(string sessionId)
     {
-        return await _context.Sessions
+        var session = await _context.Sessions
             .Include(s => s.Messages)
-            .FirstOrDefaultAsync(s => s.SessionId == sessionId);
+            .FirstOrDefaultAsync(s => s.SessionId == sessionId) ?? throw new ArgumentException("Session not found", nameof(sessionId));
+        return session;
     }
 
     public async Task SaveMessageAsync(string sessionId, ChatMessageDto message)
@@ -56,16 +57,25 @@ public class ChatPersistenceService : IChatPersistenceService
         var chatHistory = new ChatHistory();
         foreach (var message in messages)
         {
-            switch (message.Role.ToLower())
+            switch (message.Role?.ToLower())
             {
                 case "user":
-                    chatHistory.AddUserMessage(message.Content);
+                    if (message.Content != null)
+                    {
+                        chatHistory.AddUserMessage(message.Content);
+                    }
                     break;
                 case "assistant":
-                    chatHistory.AddAssistantMessage(message.Content);
+                    if (message.Content != null)
+                    {
+                        chatHistory.AddAssistantMessage(message.Content);
+                    }
                     break;
                 case "system":
-                    chatHistory.AddSystemMessage(message.Content);
+                    if (message.Content != null)
+                    {
+                        chatHistory.AddSystemMessage(message.Content);
+                    }
                     break;
             }
         }
