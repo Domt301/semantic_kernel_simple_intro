@@ -1,0 +1,61 @@
+# Ignore build output and project artifacts
+bin/
+obj/
+out/
+
+# User-specific files
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# IDE-specific files
+.idea/
+*.code-workspace
+
+# DotNet specific files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Dependency directories
+packages/
+node_modules/
+
+# Logs and debug output
+*.log
+*.tlog
+*.vspscc
+*.vspx
+*.vsxproj.user
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Runtime files
+*.pid
+*.pid.lock
+
+# By default, ignore secrets and environment files
+.env
+.env.*
+secrets.json
+
+# Build directories created by Visual Studio Code tasks
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
