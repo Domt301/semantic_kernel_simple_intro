@@ -9,13 +9,23 @@ public class ChatDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ChatSessionDto>()
-            .HasKey(s => s.SessionId);
+    modelBuilder.Entity<ChatSessionDto>()
+        .ToTable("chat_sessions")
+        .HasKey(s => s.SessionId);
 
-        modelBuilder.Entity<ChatMessageDto>()
-            .HasKey(m => m.Id);
+    modelBuilder.Entity<ChatMessageDto>()
+        .ToTable("chat_messages")
+        .HasKey(m => m.Id);
 
-        modelBuilder.Entity<ChatMessageDto>()
-            .HasIndex(m => m.SessionId);
+    // Define the relationship between ChatSessionDto and ChatMessageDto
+    modelBuilder.Entity<ChatMessageDto>()
+        .HasOne<ChatSessionDto>() // Indicates a relationship with ChatSessionDto
+        .WithMany(s => s.Messages) // One session can have many messages
+        .HasForeignKey(m => m.SessionId) // Use SessionId as the foreign key
+        .HasPrincipalKey(s => s.SessionId); // Specify the principal key in ChatSessionDto
+
+    // Additional index configuration
+    modelBuilder.Entity<ChatMessageDto>()
+        .HasIndex(m => m.SessionId);
     }
 }
