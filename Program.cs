@@ -48,37 +48,66 @@ while (true)
     Console.Write("Prompt: ");
     var userInput = Console.ReadLine();
     
-    // Save user message
-    await persistenceService.SaveMessageAsync(sessionId, new ChatMessageDto
-    {
-        Role = "user",
-        Content = userInput
-    });
-    
-    chatMessages.AddUserMessage(userInput);
-    
-    var completion = chatService.GetStreamingChatMessageContentsAsync(
-        chatMessages,
-        executionSettings: new OpenAIPromptExecutionSettings()
-        {
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
-        },
-        kernel: kernel);
+    if (string.IsNullOrEmpty(userInput))
+        continue;
 
-    string fullMessage = "";
-    await foreach (var content in completion)
+    try 
     {
-        Console.Write(content.Content);
-        fullMessage += content.Content;
+        // Save user message
+        await persistenceService.SaveMessageAsync(sessionId, new ChatMessageDto
+        {
+            Role = "user",
+            Content = userInput
+        });
+        
+        chatMessages.AddUserMessage(userInput);
+        
+        var completion = chatService.GetStreamingChatMessageContentsAsync(
+            chatMessages,
+            executionSettings: new OpenAIPromptExecutionSettings()
+            {
+                ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+            },
+            kernel: kernel);
+
+        try
+        {
+            string fullMessage = "";
+            await foreach (var content in completion)
+            {
+                if (content.Content != null)
+                {
+                    Console.Write(content.Content);
+                    fullMessage += content.Content;
+                }
+            }
+            
+            if (!string.IsNullOrEmpty(fullMessage))
+            {
+                await persistenceService.SaveMessageAsync(sessionId, new ChatMessageDto
+                {
+                    Role = "assistant",
+                    Content = fullMessage.Trim()
+                });
+                
+                chatMessages.AddAssistantMessage(fullMessage.Trim());
+            }
+            else
+            {
+                Console.WriteLine("\nWarning: Empty response received from assistant");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\nError processing assistant message: {ex.Message}");
+            continue;
+        }
+
+        Console.WriteLine();
     }
-    
-    // Save assistant message
-    await persistenceService.SaveMessageAsync(sessionId, new ChatMessageDto
+    catch (Exception ex)
     {
-        Role = "assistant",
-        Content = fullMessage
-    });
-    
-    chatMessages.AddAssistantMessage(fullMessage);
-    Console.WriteLine();
+        Console.WriteLine($"Error: {ex.Message}");
+        continue;
+    }
 }
