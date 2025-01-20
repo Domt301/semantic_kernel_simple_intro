@@ -31,6 +31,9 @@ appsettings.json
     "OpenAI": {
       "ModelName": "gpt-4-turbo-preview",
       "ApiKey": "your-openai-api-key"
+    },
+    "Database":{
+      "ConnectionString":"connstring"
     }
 }
 ```
